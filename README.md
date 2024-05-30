@@ -3,7 +3,7 @@
 
 
 ## 🚀 About Me
-I'm a Software Engineer... Here I describe one of my project.
+I'm a Software Engineer....
 
 
 # README for Setting Up and Starting the App
@@ -14,13 +14,13 @@ This README will guide you through the steps to set up and start the application
 
 **Client:** Html, Tailwind, Javascript, next.js
 
-**Server:** Node.js, Express.js 
+**Server:** Node.js, Express.js, Node-cron
 
-**Programming Language:** Javascript#
+**Programming Language:** Javascript
 
-**Block-Chain-Service:** Voyager api
+**Block-Chain-Service:** Voyager-APIS
 
-**Database:** POSTGRESQL
+**Database:** PostgreSQL
 
 
 ## Prerequisites
@@ -47,12 +47,13 @@ Step 2: Install Dependencies
 
 ```bash
 # Install server dependencies
-cd backend
+cd  .\blockchain-explorer-backend\
 npm install
 
 # Install frontend dependencies
-cd frontend
+cd .\blockchain-explorer-frontend\
 npm install
+
 ```
 
 Step 3: Set Up Environment Variables
@@ -72,13 +73,13 @@ DATABASE_URL="postgresql://user:password@localhost:5432/mydatabase"
 
 Step 5: Start the Server
 ```Step 4: Set Up the Database
-cd ../backend
+cd .\blockchain-explorer-backend\
 npm run dev
 ```
 
 Step 6: Start the frontend
 ```Step 4: Set Up the Database
-cd ../frontend
+cd .\blockchain-explorer-frontend\
 npm run dev
 ```
 
