@@ -1,0 +1,26 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Block {
+  id          Int          @id @default(autoincrement())
+  blockNumber String          @unique
+  timestamp   DateTime
+  transactions Transaction[]
+}
+
+model Transaction {
+  id          Int      @id @default(autoincrement())
+  txHash      String   
+  blockNumber String
+  txType      String
+  status      String
+  block       Block    @relation(fields: [blockNumber], references: [blockNumber])
+}
+
+
