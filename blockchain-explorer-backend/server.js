@@ -19,7 +19,16 @@ const saveBlockAndTransactions = async (block) => {
     txType: tx.type,
     status: blockStatus,
   }));
+
   try {
+    //Check if block data is already stored in DB Memory
+    const blockDataInDb = await prisma.block.findUnique({
+      where: { blockNumber: blockNumber },
+    });
+    if (blockDataInDb) {
+      console.log("[block Alread stored in DB]");
+      return;
+    }
     await prisma.block.create({
       data: {
         blockNumber: blockNumber,
@@ -73,6 +82,7 @@ const pollNewBlocks = async () => {
       const block = await fetchBlockWithTxs(i);
       await saveBlockAndTransactions(block);
     }
+    console.log("[Shedular services completed]:");
   } catch (e) {
     console.error("Error while polling new block", e.message);
   }
@@ -81,31 +91,36 @@ const pollNewBlocks = async () => {
 //shedular for getting new blocks
 // cron.schedule("*/30 * * * * *", pollNewBlocks);
 
+
 app.get("/api/transactions", async (req, res) => {
-  const { page = 1, filter } = req.query;
-  const limit = 20;
-  const offset = (page - 1) * limit;
-  const where = filter ? { txType: filter } : {};
-  const transactions = await prisma.transaction.findMany({
-    where,
-    skip: offset,
-    take: limit,
-    orderBy: {
-      id: "desc",
-    },
-    include: {
-      block: true 
+  try {
+    const { page = 1, filter } = req.query;
+    const limit = 20;
+    const offset = (page - 1) * limit;
+    const where = filter ? { txType: filter } : {};
+    const transactions = await prisma.transaction.findMany({
+      where,
+      skip: offset,
+      take: limit,
+      orderBy: {
+        id: "desc",
+      },
+      include: {
+        block: true,
+      },
+    });
+    if (!transactions) {
+      return res.json([]);
     }
-  });
-  
-  const response = transactions.map(tx => ({
-    ...tx,
-    timestamp: tx.block.timestamp
-  }));
-
-  return res.json(response);
-
-
+    const response = transactions?.map((tx) => ({
+      ...tx,
+      timestamp: tx.block.timestamp,
+    }));
+    return res.json(response);
+  } catch (error) {
+    console.error("Error while fetching transaction", error);
+    return res.json([]);
+  }
 });
 
 app.listen(8000, () => {

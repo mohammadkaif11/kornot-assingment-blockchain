@@ -16,6 +16,7 @@ function Index() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("Details");
   const [calldataFormat, setCalldataFormat] = useState("Hex");
+  const [formateType, setFormateType] = useState("Raw");
 
   useEffect(() => {
     if (id) {
@@ -129,10 +130,28 @@ function Index() {
     : 0;
   const max_fee_feeInUsd = max_fee_eth * ethPrice;
   const gasConsumed = feeInEth / parseInt(block.l1_gas_price.price_in_fri);
+  const rawCalldata = transactions.find(
+    (tx) => tx.transaction_hash === transaction_hash
+  )?.calldata;
+
+  const renderCalldata = () => {
+    switch (calldataFormat) {
+      case "Hex":
+        return JSON.stringify(rawCalldata, null, 2);
+      case "Dec":
+        return rawCalldata?.map((val) => parseInt(val, 16)).toString();
+      case "Text":
+        return rawCalldata
+          ?.map((val) => String.fromCharCode(parseInt(val, 16)))
+          .join("");
+      default:
+        return JSON.stringify(rawCalldata, null, 2);
+    }
+  };
 
   return (
-    <div className="py-10 bg-zinc-900">
-      <div className="xl:w-8/12  xl:mb-0 px-4 mx-auto mt-24 relative flex flex-col min-w-0 break-words bg-zinc-800 w-full mb-6 shadow-lg rounded">
+    <div className="py-10 bg-neutral-900">
+      <div className="xl:w-8/12  xl:mb-0 px-4 mx-auto mt-24 relative flex flex-col min-w-0 break-words bg-neutral-800 w-full mb-6 shadow-lg rounded">
         <div className="px-4 sm:px-0">
           <h3 className="text-xl font-semibold leading-7 text-white my-8">
             Trasaction
@@ -154,11 +173,11 @@ function Index() {
                 TYPE
               </p>
               {type === "DEPLOY_ACCOUNT" ? (
-                <span className="inline-flex items-center my-2 rounded-md bg-blue-200 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
+                <span className="inline-flex items-center my-2 rounded-md bg-blue-800 px-2 py-1 text-xs font-medium text-blue-200 ring-1 ring-inset ring-blue-700/10">
                   {type}
                 </span>
               ) : (
-                <span className="inline-flex items-center my-2 rounded-md bg-green-200 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
+                <span className="inline-flex items-center my-2 rounded-md bg-green-800 px-2 py-1 text-xs font-medium text-green-200 ring-1 ring-inset ring-green-600/20">
                   {" "}
                   {type}
                 </span>
@@ -169,7 +188,7 @@ function Index() {
                 TIMESTAMP
               </p>
               <p className="mt-1 text-md font-bold leading-6 text-white">
-                {timestamp}
+                {new Date(timestamp).toLocaleString()}
               </p>
             </div>
           </div>
@@ -213,7 +232,6 @@ function Index() {
             </ul>
           </div>
         </div>
-
         {activeTab === "Details" && (
           <>
             <div className="my-6">
@@ -222,60 +240,60 @@ function Index() {
                   Transaction Details
                 </h1>
                 <div className="flex gap-2 justify-between my-4">
-                  <dt className="text-sm font-medium leading-6 text-white w-[20%] flex  gap-2">
-                    <QuestionMarkCircleIcon className="h-6 w-6 " />
+                  <dt className="text-sm font-medium leading-6 text-white w-[20%] flex items-center gap-2">
+                    <QuestionMarkCircleIcon className="h-4 w-4 " />
                     BLOCK NUMBER:
                   </dt>
-                  <dd className="mt-1 text-sm leading-6 text-blue-500 w-[80%] sm:col-span-2 sm:mt-0 border-b border-gray-400">
+                  <dd className="mt-1 text-sm leading-6 text-blue-500 w-[80%] sm:col-span-2 items-center sm:mt-0 border-b border-zinc-500">
                     {block_number}
                   </dd>
                 </div>
                 <div className="flex gap-2 justify-between my-4">
-                  <dt className="text-sm font-medium leading-6 text-white w-[20%] flex  gap-2">
-                    <QuestionMarkCircleIcon className="h-6 w-6" />
+                  <dt className="text-sm font-medium leading-6 text-white w-[20%] flex  items-center  gap-2">
+                    <QuestionMarkCircleIcon className="h-4 w-4" />
                     TIMESTAMP:
                   </dt>
-                  <dd className="mt-1 text-sm leading-6 text-white w-[80%] sm:col-span-2 sm:mt-0 border-b border-gray-400">
+                  <dd className="mt-1 text-sm leading-6 text-white w-[80%] sm:col-span-2 items-center sm:mt-0 border-b border-zinc-500">
                     {timestamp}
                   </dd>
                 </div>
                 <div className="flex gap-2 justify-between my-4">
-                  <dt className="text-sm font-medium leading-6 text-white w-[20%] flex  gap-2">
-                    <QuestionMarkCircleIcon className="h-6 w-6" />
+                  <dt className="text-sm font-medium leading-6 text-white w-[20%] items-center flex  gap-2">
+                    <QuestionMarkCircleIcon className="h-4 w-4" />
                     ACTUAL FEE:
                   </dt>
-                  <dd className="mt-1 text-sm leading-6 text-white w-[80%] sm:col-span-2 sm:mt-0 border-b border-gray-400">
+                  <dd className="mt-1 text-sm leading-6 text-white w-[80%] sm:col-span-2 items-center sm:mt-0 border-b border-zinc-500">
                     {feeInEth} <span className="text-blue-500">Ether</span> ($
                     {feeInUsd})
                   </dd>
                 </div>
 
                 <div className="flex gap-2 justify-between my-4">
-                  <dt className="text-sm font-medium leading-6 text-white w-[20%] flex  gap-2">
-                    <QuestionMarkCircleIcon className="h-6 w-6" />
+                  <dt className="text-sm font-medium leading-6 text-white w-[20%] flex  items-center gap-2">
+                    <QuestionMarkCircleIcon className="h-4 w-4" />
                     MAX FEE:
                   </dt>
-                  <dd className="mt-1 text-sm leading-6 text-white w-[80%] sm:col-span-2 sm:mt-0 border-b border-gray-400">
+                  <dd className="mt-1 text-sm leading-6 text-white w-[80%] sm:col-span-2 sm:mt-0 border-b border-zinc-500">
                     {max_fee_eth} <span className="text-blue-500">Ether</span>{" "}
                     (${max_fee_feeInUsd})
                   </dd>
                 </div>
 
                 <div className="flex gap-2 justify-between my-4">
-                  <dt className="text-sm font-medium leading-6 text-white w-[20%] flex  gap-2">
-                    <QuestionMarkCircleIcon className="h-6 w-6" />
+                  <dt className="text-sm font-medium leading-6 text-white w-[20%] flex items-center  gap-2">
+                    <QuestionMarkCircleIcon className="h-4 w-4" />
                     GAS CONSUMED:
                   </dt>
-                  <dd className="mt-1 text-sm leading-6 text-white w-[80%] sm:col-span-2 sm:mt-0 border-b border-gray-400">
+                  <dd className="mt-1 text-sm leading-6 text-white w-[80%] sm:col-span-2 sm:mt-0 border-b border-zinc-500">
                     {gasConsumed}
                   </dd>
                 </div>
                 <div className="flex gap-2 justify-between my-4">
-                  <dt className="text-sm font-medium leading-6 text-white w-[20%] flex  gap-2">
-                    <QuestionMarkCircleIcon className="h-6 w-6" />
+                  <dt className="text-sm font-medium leading-6 text-white w-[20%] flex  items-center gap-2">
+                    <QuestionMarkCircleIcon className="h-4 w-4" />
                     SENDER ADDRESS:
                   </dt>
-                  <dd className="mt-1 text-sm leading-6 text-blue-500 w-[80%] sm:col-span-2 sm:mt-0 border-b border-gray-400 flex gap-2">
+                  <dd className="mt-1 text-sm leading-6 text-blue-500 w-[80%] sm:col-span-2 sm:mt-0 border-b border-zinc-500 flex gap-2">
                     {blockTransction?.sender_address}{" "}
                     <ClipboardDocumentListIcon className="text-zinc-500 ml-2 w-4 h-4" />
                   </dd>
@@ -288,63 +306,63 @@ function Index() {
                   Developer Info
                 </h1>
                 <div className="flex gap-2 justify-between my-4">
-                  <dt className="text-sm font-medium leading-6 text-white w-[20%] flex  gap-2">
-                    <QuestionMarkCircleIcon className="h-6 w-6" />
+                  <dt className="text-sm font-medium leading-6 text-white w-[20%] flex items-center  gap-2">
+                    <QuestionMarkCircleIcon className="h-4 w-4" />
                     UNIX TIMESTAMP:
                   </dt>
-                  <dd className="mt-1 text-sm leading-6 text-white w-[80%] sm:col-span-2 sm:mt-0 border-b border-gray-400 flex gap-2">
+                  <dd className="mt-1 text-sm leading-6 text-white w-[80%] sm:col-span-2 sm:mt-0 border-b border-zinc-500 flex gap-2">
                     {timestamp}{" "}
                     <ClipboardDocumentListIcon className="text-zinc-500 ml-2 w-4 h-4" />
                   </dd>
                 </div>
                 <div className="flex gap-2 justify-between my-4">
-                  <dt className="text-sm font-medium leading-6 text-white w-[20%] flex  gap-2">
-                    <QuestionMarkCircleIcon className="h-6 w-6" />
+                  <dt className="text-sm font-medium leading-6 text-white w-[20%] flex items-center  gap-2">
+                    <QuestionMarkCircleIcon className="h-4 w-4" />
                     NONCE:
                   </dt>
-                  <dd className="mt-1 text-sm leading-6 text-white w-[80%] sm:col-span-2 sm:mt-0 border-b border-gray-400">
+                  <dd className="mt-1 text-sm leading-6 text-white w-[80%] sm:col-span-2 sm:mt-0 border-b border-zinc-500">
                     {blockTransction?.nonce}
                   </dd>
                 </div>
                 <div className="flex gap-2 justify-between my-4">
-                  <dt className="text-sm font-medium leading-6 text-white w-[20%] flex  gap-2">
-                    <QuestionMarkCircleIcon className="h-6 w-6" />
+                  <dt className="text-sm font-medium leading-6 text-white w-[20%] flex items-center gap-2">
+                    <QuestionMarkCircleIcon className="h-4 w-4" />
                     POSITION:
                   </dt>
-                  <dd className="mt-1 text-sm leading-6 text-white w-[80%] sm:col-span-2 sm:mt-0 border-b border-gray-400">
+                  <dd className="mt-1 text-sm leading-6 text-white w-[80%] sm:col-span-2 sm:mt-0 border-b border-zinc-500">
                     {Postion}
                   </dd>
                 </div>
 
                 <div className="flex gap-2 justify-between my-4">
-                  <dt className="text-sm font-medium leading-6 text-white w-[20%] flex  gap-2">
-                    <QuestionMarkCircleIcon className="h-6 w-6" />
+                  <dt className="text-sm font-medium leading-6 text-white w-[20%] flex items-center  gap-2">
+                    <QuestionMarkCircleIcon className="h-4 w-4" />
                     VERSION:
                   </dt>
-                  <dd className="mt-1 text-sm leading-6 text-white w-[80%] sm:col-span-2 sm:mt-0 border-b border-gray-400">
+                  <dd className="mt-1 text-sm leading-6 text-white w-[80%] sm:col-span-2 sm:mt-0 border-b border-zinc-500">
                     {blockTransction?.version}
                   </dd>
                 </div>
 
                 <div className="flex gap-2 justify-between my-4">
-                  <dt className="text-sm font-medium leading-6 text-white w-[20%] flex  gap-2">
-                    <QuestionMarkCircleIcon className="h-6 w-6" />
+                  <dt className="text-sm font-medium leading-6 text-white w-[20%] flex items-center  gap-2">
+                    <QuestionMarkCircleIcon className="h-4 w-4" />
                     EXECUTION RESOURCES:
                   </dt>
-                  <dd className="mt-1 text-sm leading-6 text-white w-[80%] sm:col-span-2 sm:mt-0 border-b border-gray-400">
-                    <span className="inline-flex items-center my-2 rounded-md bg-yellow-200 px-2 py-1 text-xs font-medium text-yellow-800 ring-1 ring-inset ring-yellow-600/20">
+                  <dd className="mt-1 text-sm leading-6 text-white w-[80%] sm:col-span-2 sm:mt-0 border-b border-zinc-500">
+                    <span className="inline-flex items-center my-2 rounded-md bg-green-900 px-2 py-1 text-xs font-medium text-green-200 ring-1 ring-inset ring-green-600/20">
                       {execution_resources?.steps} steps
                     </span>
                     <div className="flex  gap-3 my-2">
-                      <span className="inline-flex items-center rounded-md bg-green-200 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
+                      <span className="inline-flex items-center rounded-md bg-yellow-800 px-2 py-1 text-xs font-medium text-yellow-200 ring-1 ring-inset ring-yellow-600/20">
                         {execution_resources?.pedersen_builtin_applications}{" "}
                         PEDERSEN_BUILTIN
                       </span>
-                      <span className="inline-flex items-center rounded-md bg-green-200 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
+                      <span className="inline-flex items-center rounded-md bg-yellow-800 px-2 py-1 text-xs font-medium text-yellow-200 ring-1 ring-inset ring-yellow-600/20">
                         {execution_resources?.ec_op_builtin_applications}{" "}
                         RANGE_CHECK_BUILTIN
                       </span>
-                      <span className="inline-flex items-center rounded-md bg-green-200 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
+                      <span className="inline-flex items-center rounded-md bg-yellow-800 px-2 py-1 text-xs font-medium text-yellow-200 ring-1 ring-inset ring-yellow-600/20">
                         {execution_resources?.ec_op_builtin_applications}{" "}
                         EC_OP_BUILTIN
                       </span>
@@ -352,8 +370,76 @@ function Index() {
                   </dd>
                 </div>
                 <div className="flex gap-2 justify-between my-4">
-                  <dt className="text-sm font-medium leading-6 text-white w-[20%] flex  gap-2">
-                    <QuestionMarkCircleIcon className="h-6 w-6" />
+                  <dt className="text-sm font-medium leading-6 text-white w-[20%] flex  items-center gap-2">
+                    <QuestionMarkCircleIcon className="h-4 w-4" />
+                    CALLDATA:
+                  </dt>
+                  <div className="flex flex-col w-[80%] max-h-[200px] overflow-scroll gap-2">
+                    <div className="flex gap-4">
+                      <div
+                        className="inline-flex rounded-md shadow-sm"
+                        role="group my-4"
+                      >
+                        <button
+                          onClick={() => setCalldataFormat("Hex")}
+                          className={`mr-4 px-4 py-2 text-sm font-bold text-white  border-zinc-400 border-t border-b border-l border-r  hover:bg-zinc-700 ${
+                            calldataFormat === "Hex" ? "bg-zinc-700" : ""
+                          }`}
+                        >
+                          Hex
+                        </button>
+                        <button
+                          onClick={() => setCalldataFormat("Dec")}
+                          className={`mr-4 px-4 py-2 text-sm font-bold text-white  border-zinc-400 border-t border-b border-l border-r  hover:bg-zinc-700 ${
+                            calldataFormat === "Dec" ? "bg-zinc-700" : ""
+                          }`}
+                        >
+                          Dec
+                        </button>
+                        <button
+                          onClick={() => setCalldataFormat("Text")}
+                          className={`mr-4 px-4 py-2 text-sm font-bold text-white  border-zinc-400 border-t border-b border-l border-r  hover:bg-zinc-700 ${
+                            calldataFormat === "Text" ? "bg-zinc-700" : ""
+                          }`}
+                        >
+                          Text
+                        </button>
+                      </div>
+                      <div
+                        className="inline-flex rounded-md shadow-sm"
+                        role="group my-4"
+                      >
+                        <button
+                          className={`mr-4 px-4 py-2 text-sm font-bold text-white  border-zinc-400 border-t border-b border-l border-r  hover:bg-zinc-700 ${
+                            formateType === "Decode" ? "bg-zinc-700" : ""
+                          }`}
+                          onClick={() => {
+                            setFormateType("Decode");
+                          }}
+                        >
+                          Decode
+                        </button>
+                        <button
+                          onClick={() => {
+                            setFormateType("Raw");
+                          }}
+                          className={`mr-4 px-4 py-2 text-sm font-bold text-white  border-zinc-400 border-t border-b border-l border-r  hover:bg-zinc-700 ${
+                            formateType === "Raw" ? "bg-zinc-700" : ""
+                          }`}
+                        >
+                          Raw
+                        </button>
+                      </div>
+                    </div>
+
+                    <pre className=" p-4 rounded text-gray-500">
+                      {renderCalldata()}
+                    </pre>
+                  </div>
+                </div>
+                <div className="flex gap-2 justify-between my-4">
+                  <dt className="text-sm font-medium leading-6 text-white w-[20%] flex  items-center gap-2">
+                    <QuestionMarkCircleIcon className="h-4 w-4" />
                     SIGNATURE(S):
                   </dt>
                   <div className="flex flex-col w-[80%] gap-2">
@@ -361,7 +447,7 @@ function Index() {
                       return (
                         <dd
                           key={signature}
-                          className="mt-1 text-sm leading-6 text-orange-400 w-[100%] sm:col-span-2 sm:mt-0 border-b border-gray-400 flex justify-between"
+                          className="mt-1 text-sm leading-6 text-orange-400 w-[100%] sm:col-span-2 sm:mt-0 border-b border-zinc-500 flex justify-between"
                         >
                           {signature}{" "}
                           <ClipboardDocumentListIcon className="text-zinc-500 ml-2 w-4 h-4" />
@@ -380,13 +466,13 @@ function Index() {
             <table className="items-center bg-transparent w-full border-collapse">
               <thead>
                 <tr>
-                  <th className="px-6 bg-blueGray-50 text-zinc-500	 align-middle border border-solid border-blueGray-100 py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">
+                  <th className="px-6 bg-blueGray-50 text-zinc-500	 align-middle border border-solid border-blueGray-100 py-3 text-sm uppercase border-l-0 border-r-0 whitespace-nowrap font-bold text-left">
                     ID
                   </th>
-                  <th className="px-6 bg-blueGray-50 text-zinc-500 align-middle border border-solid border-blueGray-100 py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">
+                  <th className="px-6 bg-blueGray-50 text-zinc-500 align-middle border border-solid border-blueGray-100 py-3 text-sm uppercase border-l-0 border-r-0 whitespace-nowrap font-bold text-left">
                     BLOCK
                   </th>
-                  <th className="px-6 bg-blueGray-50 text-zinc-500 align-middle border border-solid border-blueGray-100 py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">
+                  <th className="px-6 bg-blueGray-50 text-zinc-500 align-middle border border-solid border-blueGray-100 py-3 text-sm uppercase border-l-0 border-r-0 whitespace-nowrap font-bold text-left">
                     AGE
                   </th>
                 </tr>
@@ -394,13 +480,13 @@ function Index() {
               <tbody>
                 {events.map((event, index) => (
                   <tr key={index} className="hover:bg-zinc-700">
-                    <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-md whitespace-nowrap p-4 text-blueGray-700 text-white">
+                    <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-md whitespace-nowrap p-4 text-sm text-blue-500">
                       {block_number}_{Postion}_{index}
                     </td>
-                    <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-md whitespace-nowrap p-4 text-white">
+                    <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-md whitespace-nowrap p-4 text-sm text-blue-500">
                       {block_number}
                     </td>
-                    <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-md whitespace-nowrap p-4 text-white">
+                    <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-md whitespace-nowrap p-4 text-sm text-white">
                       {new Date(timestamp).toLocaleString()}
                     </td>
                   </tr>
