@@ -1,6 +1,8 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
+
+//pestoTaskManager and BlockChainManager have same URI
 generator client {
     provider = "prisma-client-js"
 }
